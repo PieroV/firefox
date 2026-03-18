@@ -13,6 +13,7 @@
 #include "mozilla/net/PHttpChannelChild.h"
 #include "mozilla/net/ChannelEventQueue.h"
 
+#include "nsHttpResponseHead.h"
 #include "nsIStreamListener.h"
 #include "nsIInterfaceRequestor.h"
 #include "nsIInterfaceRequestorUtils.h"
@@ -144,6 +145,8 @@ class HttpChannelChild final : public PHttpChannelChild,
   const char* GetCallStack() const {
     return mCallStack ? mCallStack.get() : nullptr;
   }
+
+  const nsHttpResponseHead* GetHttpProxyConnectResponseHead() const override;
 
  protected:
   mozilla::ipc::IPCResult RecvOnStartRequestSent() override;
@@ -340,6 +343,8 @@ class HttpChannelChild final : public PHttpChannelChild,
   int32_t mCacheFetchCount{0};
   uint32_t mCacheExpirationTime{
       static_cast<uint32_t>(nsICacheEntry::NO_EXPIRATION_TIME)};
+
+  Maybe<nsHttpResponseHead> mProxyConnectResponseHead;
 
   // If we're handling a multi-part response, then this is set to the current
   // part ID during OnStartRequest.

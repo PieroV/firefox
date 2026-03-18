@@ -317,6 +317,8 @@ class nsHttpChannel final : public HttpBaseChannel,
   // end server host name.
   ProxyDNSStrategy GetProxyDNSStrategy();
 
+  const nsHttpResponseHead* GetHttpProxyConnectResponseHead() const override;
+
   // Add Sec-Fetch-Storage-Access headers based on cookie partitioning
   void AddStorageAccessHeadersToRequest();
 

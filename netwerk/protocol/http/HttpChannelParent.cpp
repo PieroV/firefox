@@ -1255,6 +1255,9 @@ HttpChannelParent::OnStartRequest(nsIRequest* aRequest) {
 
   chan->GetIsProxyUsed(&args.isProxyUsed());
 
+  args.proxyConnectResponseHead() =
+      ToMaybe(mChannel->GetHttpProxyConnectResponseHead());
+
   nsCOMPtr<nsILoadInfo> loadInfo = chan->LoadInfo();
   mozilla::ipc::LoadInfoToParentLoadInfoForwarder(loadInfo,
                                                   &args.loadInfoForwarder());

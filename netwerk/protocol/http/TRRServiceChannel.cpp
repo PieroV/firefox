@@ -13,6 +13,7 @@
 #include "nsDNSPrefetch.h"
 #include "nsEscape.h"
 #include "nsHttpConnectionMgr.h"
+#include "nsHttpHeaderArray.h"
 #include "nsHttpTransaction.h"
 #include "nsThreadUtils.h"
 #include "nsICancelable.h"
@@ -1411,6 +1412,11 @@ NS_IMETHODIMP TRRServiceChannel::GetHttpProxyConnectResponseCode(
 
   *aResponseCode = -1;
   return NS_OK;
+}
+
+NS_IMETHODIMP TRRServiceChannel::HttpProxyConnectGetResponseHeader(
+    const nsACString&, nsACString&) {
+  return NS_ERROR_NOT_AVAILABLE;
 }
 
 NS_IMETHODIMP

@@ -50,7 +50,8 @@ const STATE_CHECK_READ = 5; // read from the tunnel
 const STATE_CHECK_READ_WROTE = 6; // wrote to connection, check tunnel data
 const STATE_COMPLETED = 100;
 
-const CONNECT_RESPONSE_STRING = "HTTP/1.1 200 Connection established\r\n\r\n";
+const CONNECT_RESPONSE_STRING =
+  "HTTP/1.1 200 Connection established\r\nTest-header: value\r\n\r\n";
 const CHECK_WRITE_STRING = "hello";
 const CHECK_READ_STRING = "world";
 const ALPN = "webrtc";
@@ -82,6 +83,27 @@ var listener = {
       Assert.equal(transportAvailable, false, "transport available not called");
       Assert.equal(status, 0x80004005, "error code matches");
       Assert.equal(proxiedChannel.httpProxyConnectResponseCode, 200);
+      Assert.equal(
+        proxiedChannel.httpProxyConnectGetResponseHeader("Test-header"),
+        "value"
+      );
+      try {
+        proxiedChannel.httpProxyConnectGetResponseHeader("Test-header-2");
+        Assert.ok(
+          false,
+          "We expected an exception when trying to get a non-existing header."
+        );
+      } catch (e) {
+        if (e.result) {
+          Assert.equal(
+            e.result,
+            0x80040111,
+            "We got NS_ERROR_NOT_AVAILABLE from a non-existing header."
+          );
+        } else {
+          throw e;
+        }
+      }
       nextTest();
       return;
     }

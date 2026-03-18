@@ -432,6 +432,7 @@ void HttpChannelChild::OnStartRequest(
   mCacheKey = aArgs.cacheKey();
 
   StoreIsProxyUsed(aArgs.isProxyUsed());
+  mProxyConnectResponseHead = aArgs.proxyConnectResponseHead();
 
   // replace our request headers with what actually got sent in the parent
   mRequestHead.SetHeaders(aRequestHeaders);
@@ -3098,7 +3099,27 @@ HttpChannelChild::GetProxyInfo(nsIProxyInfo** aProxyInfo) { DROP_DEAD(); }
 
 NS_IMETHODIMP HttpChannelChild::GetHttpProxyConnectResponseCode(
     int32_t* aResponseCode) {
-  DROP_DEAD();
+  NS_ENSURE_ARG_POINTER(aResponseCode);
+  if (mProxyConnectResponseHead) {
+    *aResponseCode = mProxyConnectResponseHead->Status();
+  } else {
+    *aResponseCode = -1;
+  }
+  return NS_OK;
+}
+
+NS_IMETHODIMP HttpChannelChild::HttpProxyConnectGetResponseHeader(
+    const nsACString& aHeader, nsACString& aValue) {
+  if (mProxyConnectResponseHead) {
+    return mProxyConnectResponseHead->GetHeader(nsHttp::ResolveAtom(aHeader),
+                                                aValue);
+  }
+  return NS_ERROR_NOT_AVAILABLE;
+}
+
+const nsHttpResponseHead* HttpChannelChild::GetHttpProxyConnectResponseHead()
+    const {
+  return mProxyConnectResponseHead.ptrOr(nullptr);
 }
 
 //-----------------------------------------------------------------------------

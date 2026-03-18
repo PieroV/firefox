@@ -470,6 +470,10 @@ class HttpBaseChannel : public nsHashPropertyBag,
     return mResponseTrailers.get();
   }
 
+  virtual const nsHttpResponseHead* GetHttpProxyConnectResponseHead() const {
+    return nullptr;
+  }
+
   // Return the cloned HTTP Headers if available.
   // The returned headers can be passed to SetDummyChannelForCachedResource
   // to create a dummy channel with the same HTTP headers.

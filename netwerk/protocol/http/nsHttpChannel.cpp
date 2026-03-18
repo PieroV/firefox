@@ -2693,14 +2693,28 @@ nsresult nsHttpChannel::CallOnStartRequest() {
 NS_IMETHODIMP nsHttpChannel::GetHttpProxyConnectResponseCode(
     int32_t* aResponseCode) {
   NS_ENSURE_ARG_POINTER(aResponseCode);
-
-  if (mConnectionInfo && mConnectionInfo->UsingConnect() &&
-      mProxyConnectResponseHead) {
+  if (mProxyConnectResponseHead) {
     *aResponseCode = mProxyConnectResponseHead->Status();
+  } else if (mConnectionInfo && mConnectionInfo->UsingConnect()) {
+    *aResponseCode = 0;
   } else {
     *aResponseCode = -1;
   }
   return NS_OK;
+}
+
+NS_IMETHODIMP nsHttpChannel::HttpProxyConnectGetResponseHeader(
+    const nsACString& aHeader, nsACString& aValue) {
+  if (mProxyConnectResponseHead) {
+    return mProxyConnectResponseHead->GetHeader(nsHttp::ResolveAtom(aHeader),
+                                                aValue);
+  }
+  return NS_ERROR_NOT_AVAILABLE;
+}
+
+const nsHttpResponseHead* nsHttpChannel::GetHttpProxyConnectResponseHead()
+    const {
+  return mProxyConnectResponseHead.ptrOr(nullptr);
 }
 
 nsresult nsHttpChannel::ProcessFailedProxyConnect(uint32_t httpStatus) {
