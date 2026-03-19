@@ -47,6 +47,7 @@ class HttpTransactionParent final : public PHttpTransactionParent,
       nsITransportSecurityInfo* aSecurityInfo, const bool& aProxyConnectFailed,
       const TimingStructArgs& aTimings,
       const int32_t& aProxyConnectResponseCode,
+      const Maybe<nsHttpResponseHead>& aProxyConnectResponseHead,
       nsTArray<uint8_t>&& aDataForSniffer, const Maybe<nsCString>& aAltSvcUsed,
       const bool& aDataToChildProcess, const bool& aRestarted,
       const uint32_t& aHTTPSSVCReceivedStage, const bool& aSupportsHttp3,
@@ -106,6 +107,7 @@ class HttpTransactionParent final : public PHttpTransactionParent,
       nsITransportSecurityInfo* aSecurityInfo, const bool& aProxyConnectFailed,
       const TimingStructArgs& aTimings,
       const int32_t& aProxyConnectResponseCode,
+      const Maybe<nsHttpResponseHead>& aProxyConnectResponseHead,
       nsTArray<uint8_t>&& aDataForSniffer, const Maybe<nsCString>& aAltSvcUsed,
       const bool& aDataToChildProcess, const bool& aRestarted,
       const uint32_t& aHTTPSSVCReceivedStage, const bool& aSupportsHttp3,
@@ -156,6 +158,7 @@ class HttpTransactionParent final : public PHttpTransactionParent,
   TRRSkippedReason mTRRSkipReason{nsITRRSkipReason::TRR_UNSET};
   bool mEchConfigUsed = false;
   int32_t mProxyConnectResponseCode{0};
+  Maybe<nsHttpResponseHead> mProxyConnectResponseHead;
   uint64_t mChannelId{0};
   bool mDataSentToChildProcess{false};
   bool mIsDocumentLoad;

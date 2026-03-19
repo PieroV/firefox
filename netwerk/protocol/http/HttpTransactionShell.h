@@ -161,6 +161,8 @@ class HttpTransactionShell : public nsISupports {
 
   virtual bool ProxyConnectFailed() = 0;
   virtual int32_t GetProxyConnectResponseCode() = 0;
+  virtual const Maybe<nsHttpResponseHead>& GetProxyConnectResponseHead()
+      const = 0;
 
   virtual bool DataSentToChildProcess() = 0;
 
@@ -234,6 +236,8 @@ class HttpTransactionShell : public nsISupports {
   virtual void SetH2WSConnRefTaken() override;                                 \
   virtual bool ProxyConnectFailed() override;                                  \
   virtual int32_t GetProxyConnectResponseCode() override;                      \
+  virtual const Maybe<nsHttpResponseHead>& GetProxyConnectResponseHead()       \
+      const override;                                                          \
   virtual bool DataSentToChildProcess() override;                              \
   virtual nsHttpTransaction* AsHttpTransaction() override;                     \
   virtual HttpTransactionParent* AsHttpTransactionParent() override;           \

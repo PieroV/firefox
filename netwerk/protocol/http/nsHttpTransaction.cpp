@@ -3238,8 +3238,9 @@ void nsHttpTransaction::OnProxyConnectComplete(
        aResponseHead.Status()));
 
   mProxyConnectResponseCode = aResponseHead.Status();
+  mProxyConnectResponseHead = Some(aResponseHead);
 
-  if (mConnInfo->IsHttp3() && mProxyConnectResponseCode == 200 &&
+  if (mConnInfo->IsHttp3() && mProxyConnectResponseHead->Status() == 200 &&
       !mHttp3TunnelFallbackTimerCreated) {
     mHttp3TunnelFallbackTimerCreated = true;
     CreateAndStartTimer(mHttp3TunnelFallbackTimer, this,
@@ -3249,6 +3250,11 @@ void nsHttpTransaction::OnProxyConnectComplete(
 
 int32_t nsHttpTransaction::GetProxyConnectResponseCode() {
   return mProxyConnectResponseCode;
+}
+
+const Maybe<nsHttpResponseHead>&
+nsHttpTransaction::GetProxyConnectResponseHead() const {
+  return mProxyConnectResponseHead;
 }
 
 void nsHttpTransaction::SetFlat407Headers(const nsACString& aHeaders) {
