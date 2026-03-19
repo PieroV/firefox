@@ -678,7 +678,7 @@ nsresult nsHttpConnection::AddTransaction(nsAHttpTransaction* httpTransaction,
   // Let the transaction know that the tunnel is already established and we
   // don't need to setup the tunnel again.
   if (transCI->UsingConnect() && mEverUsedSpdy && mHasTLSTransportLayer) {
-    httpTransaction->OnProxyConnectComplete(200);
+    httpTransaction->OnProxyConnectComplete({});
   }
 
   LOG(("nsHttpConnection::AddTransaction [this=%p] for %s%s", this,
@@ -1067,7 +1067,7 @@ nsresult nsHttpConnection::OnHeadersAvailable(nsAHttpTransaction* trans,
            (mForWebSocket && mInSpdyTunnel))) {
         HandleWebSocketResponse(requestHead, responseHead, responseStatus);
       } else {
-        HandleTunnelResponse(responseStatus, reset);
+        HandleTunnelResponse(*responseHead, reset);
       }
       break;
     }
@@ -1085,8 +1085,8 @@ nsresult nsHttpConnection::OnHeadersAvailable(nsAHttpTransaction* trans,
   return NS_OK;
 }
 
-void nsHttpConnection::HandleTunnelResponse(uint16_t responseStatus,
-                                            bool* reset) {
+void nsHttpConnection::HandleTunnelResponse(
+    const nsHttpResponseHead& responseHead, bool* reset) {
   LOG(("nsHttpConnection::HandleTunnelResponse()"));
   MOZ_ASSERT(TunnelSetupInProgress());
   MOZ_ASSERT(mProxyConnectStream);
@@ -1097,7 +1097,7 @@ void nsHttpConnection::HandleTunnelResponse(uint16_t responseStatus,
   // the socket connection if using SSL. Finally, we have to wake up the
   // socket write request.
 
-  if (responseStatus == 200) {
+  if (responseHead.Status() == 200) {
     ChangeState(HttpConnectionState::REQUEST);
   }
   mProxyConnectStream = nullptr;
@@ -1105,8 +1105,8 @@ void nsHttpConnection::HandleTunnelResponse(uint16_t responseStatus,
                               : mConnInfo->EndToEndSSL();
   bool onlyConnect = mTransactionCaps & NS_HTTP_CONNECT_ONLY;
 
-  mTransaction->OnProxyConnectComplete(responseStatus);
-  if (responseStatus == 200) {
+  mTransaction->OnProxyConnectComplete(responseHead);
+  if (responseHead.Status() == 200) {
     LOG(("proxy CONNECT succeeded! endtoendssl=%d onlyconnect=%d\n", isHttps,
          onlyConnect));
     // If we're only connecting, we don't need to reset the transaction

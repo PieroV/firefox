@@ -3229,14 +3229,15 @@ bool nsHttpTransaction::IsWebsocketUpgrade() {
   return false;
 }
 
-void nsHttpTransaction::OnProxyConnectComplete(int32_t aResponseCode) {
+void nsHttpTransaction::OnProxyConnectComplete(
+    const nsHttpResponseHead& aResponseHead) {
   MOZ_ASSERT(OnSocketThread(), "not on socket thread");
   MOZ_ASSERT(mConnInfo->UsingConnect());
 
   LOG(("nsHttpTransaction::OnProxyConnectComplete %p aResponseCode=%d", this,
-       aResponseCode));
+       aResponseHead.Status()));
 
-  mProxyConnectResponseCode = aResponseCode;
+  mProxyConnectResponseCode = aResponseHead.Status();
 
   if (mConnInfo->IsHttp3() && mProxyConnectResponseCode == 200 &&
       !mHttp3TunnelFallbackTimerCreated) {
