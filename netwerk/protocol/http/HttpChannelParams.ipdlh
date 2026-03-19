@@ -55,6 +55,7 @@ struct HttpChannelOnStartRequestArgs
   bool dataFromSocketProcess;
   bool hasHTTPSRR;
   bool isProxyUsed;
+  nsHttpResponseHead? proxyConnectResponseHead;
   uint8_t redirectCount;
   nsCString protocolVersion;
   CacheDisposition cacheDisposition;

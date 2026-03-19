@@ -1344,7 +1344,8 @@ HttpChannelParent::OnStartRequest(nsIRequest* aRequest) {
     if (!mBgParent->OnStartRequest(
             std::move(newResponseHead), useResponseHead,
             cleanedUpRequest ? cleanedUpRequestHeaders : requestHead->Headers(),
-            args, altDataSource, chan->GetOnStartRequestStartTime())) {
+            std::move(args), altDataSource,
+            chan->GetOnStartRequestStartTime())) {
       rv = NS_ERROR_UNEXPECTED;
     }
   }

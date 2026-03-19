@@ -142,7 +142,7 @@ void HttpBackgroundChannelParent::OnChannelClosed() {
 bool HttpBackgroundChannelParent::OnStartRequest(
     nsHttpResponseHead&& aResponseHead, const bool& aUseResponseHead,
     const nsHttpHeaderArray& aRequestHeaders,
-    const HttpChannelOnStartRequestArgs& aArgs,
+    HttpChannelOnStartRequestArgs&& aArgs,
     const nsCOMPtr<nsICacheEntry>& aAltDataSource,
     TimeStamp aOnStartRequestStart) {
   LOG(("HttpBackgroundChannelParent::OnStartRequest [this=%p]\n", this));
@@ -157,7 +157,7 @@ bool HttpBackgroundChannelParent::OnStartRequest(
     nsresult rv = mBackgroundThread->Dispatch(
         NewRunnableMethod<nsHttpResponseHead&&, const bool,
                           const nsHttpHeaderArray,
-                          const HttpChannelOnStartRequestArgs,
+                          HttpChannelOnStartRequestArgs&&,
                           const nsCOMPtr<nsICacheEntry>, TimeStamp>(
             "net::HttpBackgroundChannelParent::OnStartRequest", this,
             &HttpBackgroundChannelParent::OnStartRequest,
@@ -188,7 +188,7 @@ bool HttpBackgroundChannelParent::OnStartRequest(
   }
 
   return SendOnStartRequest(std::move(aResponseHead), aUseResponseHead,
-                            aRequestHeaders, aArgs, altData,
+                            aRequestHeaders, std::move(aArgs), altData,
                             aOnStartRequestStart);
 }
 
