@@ -2694,8 +2694,9 @@ NS_IMETHODIMP nsHttpChannel::GetHttpProxyConnectResponseCode(
     int32_t* aResponseCode) {
   NS_ENSURE_ARG_POINTER(aResponseCode);
 
-  if (mConnectionInfo && mConnectionInfo->UsingConnect()) {
-    *aResponseCode = mProxyConnectResponseCode;
+  if (mConnectionInfo && mConnectionInfo->UsingConnect() &&
+      mProxyConnectResponseHead) {
+    *aResponseCode = mProxyConnectResponseHead->Status();
   } else {
     *aResponseCode = -1;
   }
@@ -9313,7 +9314,7 @@ nsHttpChannel::OnStartRequest(nsIRequest* request) {
       .AccumulateRawDuration(mSuspendTotalTime);
 
   if (mTransaction) {
-    mProxyConnectResponseCode = mTransaction->GetProxyConnectResponseCode();
+    mProxyConnectResponseHead = mTransaction->GetProxyConnectResponseHead();
     if (request == mTransactionPump) {
       StoreDataSentToChildProcess(mTransaction->DataSentToChildProcess());
     }
@@ -9627,7 +9628,7 @@ nsresult nsHttpChannel::ContinueOnStartRequest2(nsresult result) {
        mStatus == NS_ERROR_NET_TIMEOUT || mStatus == NS_ERROR_NET_RESET)) {
     PushRedirectAsyncFunc(&nsHttpChannel::ContinueOnStartRequest3);
     if (NS_SUCCEEDED(ProxyFailover())) {
-      mProxyConnectResponseCode = 0;
+      mProxyConnectResponseHead.reset();
       return NS_OK;
     }
     PopRedirectAsyncFunc(&nsHttpChannel::ContinueOnStartRequest3);

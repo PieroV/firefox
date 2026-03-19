@@ -445,8 +445,6 @@ HttpTransactionChild::OnStartRequest(nsIRequest* aRequest) {
     }
   }
 
-  int32_t proxyConnectResponseCode =
-      mTransaction->GetProxyConnectResponseCode();
   Maybe<nsHttpResponseHead> proxyConnectResponseHead =
       mTransaction->GetProxyConnectResponseHead();
 
@@ -469,7 +467,7 @@ HttpTransactionChild::OnStartRequest(nsIRequest* aRequest) {
   (void)SendOnStartRequest(
       status, std::move(optionalHead), securityInfo,
       mTransaction->ProxyConnectFailed(),
-      ToTimingStructArgs(mTransaction->Timings()), proxyConnectResponseCode,
+      ToTimingStructArgs(mTransaction->Timings()),
       std::move(proxyConnectResponseHead), dataForSniffer, optionalAltSvcUsed,
       !!mDataBridgeParent, mTransaction->TakeRestartedState(),
       mTransaction->HTTPSSVCReceivedStage(), mTransaction->GetSupportsHTTP3(),

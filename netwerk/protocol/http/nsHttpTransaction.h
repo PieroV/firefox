@@ -571,7 +571,6 @@ class nsHttpTransaction final : public nsAHttpTransaction,
   } mEarlyDataDisposition{EARLY_NONE};
 
   HttpTrafficCategory mTrafficCategory{HttpTrafficCategory::eInvalid};
-  Atomic<int32_t> mProxyConnectResponseCode{0};
   Maybe<nsHttpResponseHead> mProxyConnectResponseHead;
 
   nsCOMPtr<nsICancelable> mDNSRequest;

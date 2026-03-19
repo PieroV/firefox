@@ -3237,7 +3237,6 @@ void nsHttpTransaction::OnProxyConnectComplete(
   LOG(("nsHttpTransaction::OnProxyConnectComplete %p aResponseCode=%d", this,
        aResponseHead.Status()));
 
-  mProxyConnectResponseCode = aResponseHead.Status();
   mProxyConnectResponseHead = Some(aResponseHead);
 
   if (mConnInfo->IsHttp3() && mProxyConnectResponseHead->Status() == 200 &&
@@ -3249,7 +3248,7 @@ void nsHttpTransaction::OnProxyConnectComplete(
 }
 
 int32_t nsHttpTransaction::GetProxyConnectResponseCode() {
-  return mProxyConnectResponseCode;
+  return mProxyConnectResponseHead ? mProxyConnectResponseHead->Status() : 0;
 }
 
 const Maybe<nsHttpResponseHead>&
@@ -3258,7 +3257,7 @@ nsHttpTransaction::GetProxyConnectResponseHead() const {
 }
 
 void nsHttpTransaction::SetFlat407Headers(const nsACString& aHeaders) {
-  MOZ_ASSERT(mProxyConnectResponseCode == 407);
+  MOZ_ASSERT(GetProxyConnectResponseCode() == 407);
   MOZ_ASSERT(!mResponseHead);
 
   LOG(("nsHttpTransaction::SetFlat407Headers %p", this));
