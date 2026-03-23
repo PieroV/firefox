@@ -26,6 +26,7 @@ using mozilla::OriginAttributes from "mozilla/ipc/BackgroundUtils.h";
 using mozilla::net::RequestHeaderTuples from "mozilla/net/PHttpChannelParams.h";
 using struct nsHttpAtom from "nsHttp.h";
 [MoveOnly] using class mozilla::net::nsHttpResponseHead from "nsHttpResponseHead.h";
+using class mozilla::net::nsHttpHeaderArray from "nsHttpHeaderArray.h";
 using class mozilla::TimeStamp from "mozilla/TimeStamp.h";
 [RefCounted] using class nsIPropertyBag2 from "nsIPropertyBag2.h";
 [RefCounted] using class nsDOMNavigationTiming from "nsDOMNavigationTiming.h";
@@ -445,6 +446,7 @@ struct ProxyInfoCloneArgs
   uint32_t resolveFlags;
   nsCString proxyAuthorizationHeader;
   nsCString connectionIsolationKey;
+  nsHttpHeaderArray connectHeaders;
 };
 
 struct HttpConnectionInfoCloneArgs

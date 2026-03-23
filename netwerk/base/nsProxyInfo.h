@@ -5,6 +5,7 @@
 #ifndef nsProxyInfo_h_
 #define nsProxyInfo_h_
 
+#include "nsHttpHeaderArray.h"
 #include "nsIProxyInfo.h"
 #include "nsString.h"
 #include "mozilla/Atomics.h"
@@ -47,6 +48,7 @@ class nsProxyInfo final : public nsIProxyInfo {
   const nsCString& ConnectionIsolationKey() const {
     return mConnectionIsolationKey;
   }
+  const nsHttpHeaderArray& ConnectHeaders() const { return mConnectHeaders; }
 
   bool IsDirect();
   bool IsHTTP();
@@ -74,7 +76,8 @@ class nsProxyInfo final : public nsIProxyInfo {
               uint32_t aFlags, uint32_t aTimeout, uint32_t aResolveFlags,
               const nsACString& aProxyAuthorizationHeader,
               const nsACString& aConnectionIsolationKey,
-              const nsACString& aUriTemplate);
+              const nsACString& aUriTemplate,
+              const nsHttpHeaderArray& aConnectHeaders);
 
   ~nsProxyInfo() { NS_IF_RELEASE(mNext); }
 
@@ -86,6 +89,7 @@ class nsProxyInfo final : public nsIProxyInfo {
   nsCString mConnectionIsolationKey;
   nsCString mSourceId;
   nsCString mMasqueTemplate;
+  nsHttpHeaderArray mConnectHeaders;
   int32_t mPort{-1};
   uint32_t mFlags{0};
   // We need to read on multiple threads, but don't need to sync on anything

@@ -202,6 +202,8 @@ class nsProtocolProxyService final : public nsIProtocolProxyService2,
    *        The username for the proxy (ASCII). May be "", but not null.
    * @param password
    *        The password for the proxy (ASCII). May be "", but not null.
+   * @param connectHeaders
+   *        Additional headers to pass to HTTP CONNECT.
    * @param flags
    *        The proxy flags (nsIProxyInfo::flags).
    * @param timeout
@@ -219,6 +221,7 @@ class nsProtocolProxyService final : public nsIProtocolProxyService2,
                                  const nsACString& password,
                                  const nsACString& aProxyAuthorizationHeader,
                                  const nsACString& aConnectionIsolationKey,
+                                 const nsHttpHeaderArray& connectHeaders,
                                  uint32_t flags, uint32_t timeout,
                                  nsIProxyInfo* aFailoverProxy,
                                  uint32_t aResolveFlags, nsIProxyInfo** result);

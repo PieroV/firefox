@@ -2051,6 +2051,17 @@ nsresult nsHttpConnection::MakeConnectString(nsAHttpTransaction* trans,
     rv = request->SetHeader("ALPN"_ns, val);
     MOZ_ASSERT(NS_SUCCEEDED(rv));
   }
+  if (trans->ConnectionInfo()->ProxyInfo()) {
+    const nsHttpHeaderArray& headers =
+        trans->ConnectionInfo()->ProxyInfo()->ConnectHeaders();
+    for (uint32_t i = 0; i < headers.Count(); ++i) {
+      nsHttpAtom header;
+      nsAutoCString headerNameOriginal;
+      const char* value = headers.PeekHeaderAt(i, header, headerNameOriginal);
+      rv = request->SetHeader(header, nsDependentCString(value));
+      MOZ_ASSERT(NS_SUCCEEDED(rv));
+    }
+  }
 
   result.Truncate();
   request->Flatten(result, false);

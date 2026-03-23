@@ -31,13 +31,15 @@ nsProxyInfo::nsProxyInfo(const nsACString& aType, const nsACString& aHost,
                          uint32_t aTimeout, uint32_t aResolveFlags,
                          const nsACString& aProxyAuthorizationHeader,
                          const nsACString& aConnectionIsolationKey,
-                         const nsACString& aMasqueTemplate)
+                         const nsACString& aMasqueTemplate,
+                         const nsHttpHeaderArray& aConnectHeaders)
     : mHost(aHost),
       mUsername(aUsername),
       mPassword(aPassword),
       mProxyAuthorizationHeader(aProxyAuthorizationHeader),
       mConnectionIsolationKey(aConnectionIsolationKey),
       mMasqueTemplate(aMasqueTemplate),
+      mConnectHeaders(aConnectHeaders),
       mPort(aPort),
       mFlags(aFlags),
       mResolveFlags(aResolveFlags),
@@ -196,6 +198,7 @@ void nsProxyInfo::SerializeProxyInfo(nsProxyInfo* aProxyInfo,
     arg->password() = iter->Password();
     arg->proxyAuthorizationHeader() = iter->ProxyAuthorizationHeader();
     arg->connectionIsolationKey() = iter->ConnectionIsolationKey();
+    arg->connectHeaders() = iter->ConnectHeaders();
     arg->flags() = iter->Flags();
     arg->timeout() = iter->Timeout();
     arg->resolveFlags() = iter->ResolveFlags();
@@ -212,7 +215,8 @@ already_AddRefed<nsProxyInfo> nsProxyInfo::DeserializeProxyInfo(
         new nsProxyInfo(info.type(), info.host(), info.port(), info.username(),
                         info.password(), info.flags(), info.timeout(),
                         info.resolveFlags(), info.proxyAuthorizationHeader(),
-                        info.connectionIsolationKey(), info.masqueTemplate());
+                        info.connectionIsolationKey(), info.masqueTemplate(),
+                        info.connectHeaders());
     if (last) {
       last->mNext = pi;
       NS_ADDREF(last->mNext);

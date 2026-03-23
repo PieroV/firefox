@@ -1699,7 +1699,7 @@ nsProtocolProxyService::NewProxyInfoWithAuth(
 
   return NewProxyInfo_Internal(type, aHost, aPort, ""_ns, aUsername, aPassword,
                                aProxyAuthorizationHeader,
-                               aConnectionIsolationKey, aFlags,
+                               aConnectionIsolationKey, {}, aFlags,
                                aFailoverTimeout, aFailoverProxy, 0, aResult);
 }
 
@@ -1712,7 +1712,7 @@ nsProtocolProxyService::NewMASQUEProxyInfo(
     nsIProxyInfo** aResult) {
   return NewProxyInfo_Internal(kProxyType_MASQUE, aHost, aPort, aMasqueTemplate,
                                ""_ns, ""_ns, aProxyAuthorizationHeader,
-                               aConnectionIsolationKey, aFlags,
+                               aConnectionIsolationKey, {}, aFlags,
                                aFailoverTimeout, aFailoverProxy, 0, aResult);
 }
 
@@ -2085,7 +2085,8 @@ nsresult nsProtocolProxyService::NewProxyInfo_Internal(
     const char* aType, const nsACString& aHost, int32_t aPort,
     const nsACString& aMasqueTemplate, const nsACString& aUsername,
     const nsACString& aPassword, const nsACString& aProxyAuthorizationHeader,
-    const nsACString& aConnectionIsolationKey, uint32_t aFlags,
+    const nsACString& aConnectionIsolationKey,
+    const nsHttpHeaderArray& aConnectHeaders, uint32_t aFlags,
     uint32_t aFailoverTimeout, nsIProxyInfo* aFailoverProxy,
     uint32_t aResolveFlags, nsIProxyInfo** aResult) {
   if (aPort <= 0) aPort = -1;
@@ -2113,6 +2114,7 @@ nsresult nsProtocolProxyService::NewProxyInfo_Internal(
       aFailoverTimeout == UINT32_MAX ? mFailedProxyTimeout : aFailoverTimeout;
   proxyInfo->mProxyAuthorizationHeader = aProxyAuthorizationHeader;
   proxyInfo->mConnectionIsolationKey = aConnectionIsolationKey;
+  proxyInfo->mConnectHeaders = aConnectHeaders;
   failover.swap(proxyInfo->mNext);
 
   proxyInfo.forget(aResult);
@@ -2308,8 +2310,8 @@ nsresult nsProtocolProxyService::Resolve_Internal(nsIChannel* channel,
 
   if (type) {
     rv = NewProxyInfo_Internal(type, *host, port, ""_ns, ""_ns, ""_ns, ""_ns,
-                               ""_ns, proxyFlags, UINT32_MAX, nullptr, flags,
-                               result);
+                               ""_ns, {}, proxyFlags, UINT32_MAX, nullptr,
+                               flags, result);
     if (NS_FAILED(rv)) return rv;
   }
 
